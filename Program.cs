@@ -9,6 +9,9 @@ class Program
 {
 	static void Main(string[] args)
 	{
-		new Day1().Solve(File.ReadAllLines(@"..\..\..\day 1\day1.txt"));
+		new Day2().Solve(Input(2));
 	}
+
+	static string[] Input(int day)
+		=> File.ReadAllLines($@"..\..\..\Day {day}\input.txt");
 }
