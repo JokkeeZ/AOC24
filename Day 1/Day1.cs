@@ -18,15 +18,22 @@ class Day1 : IAdventDay
 		left.Sort();
 		right.Sort();
 
-		var total = 0;
-
+		var totalDistance = 0;
 		for (var i = 0; i < left.Count; i++)
 		{
-			var distance = left[i] - right[i];
-
-			total += Math.Abs(distance);
+			totalDistance += Math.Abs(left[i] - right[i]);
 		}
 
-		Console.WriteLine(total);
+		Console.WriteLine($"Part 1: {totalDistance}");
+
+		// Part 2
+		var nums = new List<int>();
+		for (var i = 0; i < left.Count; ++i)
+		{
+			var c = right.Count(x => x == left[i]);
+			nums.Add(left[i] * c);
+		}
+
+		Console.WriteLine($"Part 2: {nums.Sum()}");
 	}
 }
