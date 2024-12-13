@@ -9,7 +9,7 @@ class Program
 {
 	static void Main(string[] args)
 	{
-		new Day5().Solve(Input(5));
+		new Day6().Solve(Input(6));
 	}
 
 	static string[] Input(int day)
