@@ -79,11 +79,8 @@ class Day4 : IAdventDay
 		Console.WriteLine($"Part 2: {xMasCount}");
 	}
 
-	private bool IsValidCell(int x, int y)
-		=> x >= 0 && y >= 0 && x < map.GetLength(0) && y < map.GetLength(1);
-
 	private bool IsValidCell(int x, int y, char c)
-		=> IsValidCell(x, y) && map[x, y] == c;
+		=> map.InBounds(x, y) && map[x, y] == c;
 
 	private bool CheckHorizontal(int x, int y)
 	{
@@ -191,10 +188,10 @@ class Day4 : IAdventDay
 
 	private bool CheckXMas(int x, int y)
 	{
-		if (!IsValidCell(x - 1, y - 1)) return false;
-		if (!IsValidCell(x + 1, y - 1)) return false;
-		if (!IsValidCell(x - 1, y + 1)) return false;
-		if (!IsValidCell(x + 1, y + 1)) return false;
+		if (!map.InBounds(x - 1, y - 1)) return false;
+		if (!map.InBounds(x + 1, y - 1)) return false;
+		if (!map.InBounds(x - 1, y + 1)) return false;
+		if (!map.InBounds(x + 1, y + 1)) return false;
 
 		var topL = map[x - 1, y - 1];
 		var topR = map[x + 1, y - 1];
