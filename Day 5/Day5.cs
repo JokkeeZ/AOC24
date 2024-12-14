@@ -4,6 +4,8 @@ namespace AOC24;
 
 class Day5 : IAdventDay
 {
+	public bool IsActive => false;
+
 	public void Solve(string[] input)
 	{
 		var rules = new List<(int, int)>();

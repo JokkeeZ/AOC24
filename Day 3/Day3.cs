@@ -4,6 +4,8 @@ namespace AOC24;
 
 class Day3 : IAdventDay
 {
+	public bool IsActive => false;
+
 	public void Solve(string[] input)
 	{
 		var regex = new Regex("(mul\\(([0-9]+),([0-9]+)\\))");

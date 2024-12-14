@@ -2,6 +2,8 @@
 
 class Day6 : IAdventDay
 {
+	public bool IsActive => false;
+
 	private readonly bool draw = false;
 
 	private char[,] map;

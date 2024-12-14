@@ -2,6 +2,8 @@
 
 class Day4 : IAdventDay
 {
+	public bool IsActive => false;
+
 	private char[,] map;
 	private readonly char[] XMAS = ['X', 'M', 'A', 'S'];
 

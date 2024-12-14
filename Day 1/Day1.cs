@@ -2,6 +2,8 @@
 
 class Day1 : IAdventDay
 {
+	public bool IsActive => false;
+
 	public void Solve(string[] input)
 	{
 		var left = new List<int>();
