@@ -13,20 +13,21 @@ class Program
 {
 	static void Main(string[] args)
 	{
-		foreach (var type in Assembly.GetExecutingAssembly().GetTypes()
-			.Where(type => type.GetInterfaces().Contains(typeof(IAdventDay))))
+		foreach (var day in Assembly.GetExecutingAssembly().GetTypes()
+			.Where(t => t.GetInterfaces().Contains(typeof(IAdventDay)))
+			.Select(t => ((IAdventDay)Activator.CreateInstance(t)))
+			.Where(d => d.IsActive))
 		{
-			var instance = (IAdventDay)Activator.CreateInstance(type);
+			var dayNumber = day.GetType().Name.Replace("Day", string.Empty);
+			var inputPath = $@"..\..\..\Day {dayNumber}\input.txt";
 
-			if (instance.IsActive)
+			if (File.Exists(inputPath))
 			{
-				var day = type.Name.Replace("Day", string.Empty);
-				var inputPath = $@"..\..\..\Day {day}\input.txt";
-
-				if (File.Exists(inputPath))
-				{
-					instance.Solve(File.ReadAllLines(inputPath));
-				}
+				day.Solve(File.ReadAllLines(inputPath));
+			}
+			else
+			{
+				Console.WriteLine($"No input file found for the day: {dayNumber}.");
 			}
 		}
 	}
