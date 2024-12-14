@@ -74,12 +74,13 @@ class Day7 : IAdventDay
 		while (stack.Count > 0)
 		{
 			var (current, index) = stack.Pop();
+			var concat = long.Parse($"{current}{numbers[index]}");
 
 			if (index == numbers.Count - 1)
 			{
 				if (current + numbers[index] == sum ||
 					current * numbers[index] == sum ||
-					long.Parse($"{current}{numbers[index]}") == sum)
+					concat == sum)
 				{
 					return true;
 				}
@@ -89,7 +90,7 @@ class Day7 : IAdventDay
 
 			stack.Push((current + numbers[index], index + 1));
 			stack.Push((current * numbers[index], index + 1));
-			stack.Push((long.Parse($"{current}{numbers[index]}"), index + 1));
+			stack.Push((concat, index + 1));
 		}
 
 		return false;
