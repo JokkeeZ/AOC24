@@ -2,7 +2,7 @@
 
 class Day8 : IAdventDay
 {
-	public bool IsActive => true;
+	public bool IsActive => false;
 
 	private char[,] map;
 	private readonly HashSet<(int x, int y)> antinodes = [];

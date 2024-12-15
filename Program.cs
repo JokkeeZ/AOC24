@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 
 namespace AOC24;
 
@@ -23,7 +24,9 @@ class Program
 
 			if (File.Exists(inputPath))
 			{
+				var sw = Stopwatch.StartNew();
 				day.Solve(File.ReadAllLines(inputPath));
+				Console.WriteLine($"[{dayNumber}] -> Elapsed: {sw.ElapsedMilliseconds}ms.");
 			}
 			else
 			{
