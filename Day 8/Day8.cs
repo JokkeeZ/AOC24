@@ -5,7 +5,7 @@ class Day8 : IAdventDay
 	public bool IsActive => true;
 
 	private char[,] map;
-	private readonly HashSet<(int x, int y)> antinodeLocations = [];
+	private readonly HashSet<(int x, int y)> antinodes = [];
 
 	public void Solve(string[] input)
 	{
@@ -20,7 +20,9 @@ class Day8 : IAdventDay
 				map[x, y] = input[y][x];
 
 				if (input[y][x] == '.')
+				{
 					continue;
+				}
 
 				if (stations.TryGetValue(map[x, y], out var value))
 				{
@@ -33,45 +35,59 @@ class Day8 : IAdventDay
 			}
 		}
 
-		foreach (var (_, positions) in stations)
+		foreach (var (name, positions) in stations)
 		{
-			foreach (var position in positions)
+			foreach (var current in positions)
 			{
-				foreach (var otherPosition in positions.Where(p => p != position))
+				foreach (var other in positions.Where(p => p.x != current.x || p.y != current.y))
 				{
-					CreateAntinode(position, otherPosition);
+					var (x, y) = GetDelta(other, current);
+					var antinode = (
+						x: other.x + x,
+						y: other.y + y
+					);
+
+					if (map.InBounds(antinode.x, antinode.y))
+					{
+						antinodes.Add(antinode);
+					}
 				}
 			}
 		}
 
-		PrintMap();
-		Console.WriteLine($"Part 1: {antinodeLocations.Count}");
-	}
+		Console.WriteLine($"Part 1: {antinodes.Count}");
 
-	private void CreateAntinode((int x, int y) station1, (int x, int y) station2)
-	{
-		var antinode = (
-			x: (station2.x - station1.x + station2.x),
-			y: (station2.y - station1.y + station2.y)
-		);
-
-		if (map.InBounds(antinode.x, antinode.y))
+		foreach (var (_, positions) in stations)
 		{
-			//map[antinode.x, antinode.y] = '#';
-			antinodeLocations.Add(antinode);
-		}
-	}
-
-	private void PrintMap()
-	{
-		for (var y = 0; y < map.GetLength(1); ++y)
-		{
-			for (var x = 0; x < map.GetLength(0); ++x)
+			foreach (var current in positions)
 			{
-				Console.Write(map[x, y]);
+				foreach (var other in positions.Where(p => p.x != current.x || p.y != current.y))
+				{
+					var delta = GetDelta(current, other);
+					AddAntinode(current, delta, true);
+					AddAntinode(current, delta, false);
+				}
 			}
+		}
 
-			Console.WriteLine();
+		Console.WriteLine($"Part 2: {antinodes.Count}");
+	}
+
+	private void AddAntinode((int x, int y) current, (int x, int y) delta, bool down)
+	{
+		var antinode = down
+			? (x: current.x + delta.x, y: current.y + delta.y)
+			: (x: current.x - delta.x, y: current.y - delta.y);
+
+		while (map.InBounds(antinode.x, antinode.y))
+		{
+			antinodes.Add(antinode);
+			antinode = down
+				? (x: antinode.x + delta.x, y: antinode.y + delta.y)
+				: (x: antinode.x - delta.x, y: antinode.y - delta.y);
 		}
 	}
+
+	static (int x, int y) GetDelta((int x, int y) p1, (int x, int y) p2)
+		=> (x: p1.x - p2.x, y: p1.y - p2.y);
 }
