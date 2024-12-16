@@ -3,52 +3,87 @@
 class Day9 : IAdventDay
 {
 	public bool IsActive => true;
-	private readonly bool draw = false;
-
-	private readonly string example = "2333133121414131402";
 
 	public void Solve(string[] input)
 	{
-		//input[0] = example;
-		var blocks = new List<int>();
-		var counter = 0;
-
 		var nums = input[0].Select(x => int.Parse(x.ToString())).ToList();
+
+		var counter = 0;
+		var blocks = new List<int>();
+
 		for (var i = 0; i < nums.Count; ++i)
 		{
 			blocks.AddRange(Enumerable.Repeat(i % 2 == 0 ? counter++ : -1, nums[i]));
 		}
 
-		if (draw)
-		{
-			DrawBlocks(blocks);
-		}
+		Part1(new(blocks));
+		Part2(new(blocks));
+	}
 
+	static void Part1(List<int> blocks)
+	{
 		while (true)
 		{
 			if (!Swap(blocks))
 			{
 				break;
 			}
+		}
 
-			if (draw)
+		Console.WriteLine($"Part 1: {CalculateChecksum(blocks)}");
+	}
+
+	static void Part2(List<int> blocks)
+	{
+		for (var i = blocks.Max(); i >= 0; i--)
+		{
+			var blockStart = blocks.IndexOf(i);
+			var blockEnd = blocks.LastIndexOf(i);
+			var emptyBlockIndex = FindEmptyBlockIndex(blocks, (blockEnd - blockStart) + 1, blockStart);
+
+			if (emptyBlockIndex > -1)
 			{
-				DrawBlocks(blocks);
+				for (var j = blockStart; j <= blockEnd; ++j, emptyBlockIndex++)
+				{
+					blocks.SwapItems(emptyBlockIndex, j);
+				}
 			}
 		}
 
+		Console.WriteLine($"Part 2: {CalculateChecksum(blocks)}");
+	}
+
+	static int FindEmptyBlockIndex(List<int> blocks, int blockSize, int blockIndex)
+	{
+		var count = 0;
+		for (var i = 0; i < blocks.Count; i++)
+		{
+			count = blocks[i] == -1 ? count + 1 : 0;
+
+			if (count == blockSize)
+			{
+				var index = i - blockSize + 1;
+				return index < blockIndex ? index : -1;
+			}
+		}
+
+		return -1;
+	}
+
+	static long CalculateChecksum(List<int> blocks)
+	{
 		long checksum = 0;
 		for (var i = 0; i < blocks.Count; ++i)
 		{
 			if (blocks[i] == -1)
 			{
-				break;
+				continue;
 			}
 
-			checksum += (blocks[i] * i);
+			checksum += blocks[i] * i;
 		}
 
-		Console.WriteLine($"Part 1: {checksum}");
+		return checksum;
 	}
 
 	static bool Swap(List<int> blocks)
@@ -58,21 +93,10 @@ class Day9 : IAdventDay
 
 		if (a < b)
 		{
-			(blocks[b], blocks[a]) = (blocks[a], blocks[b]);
+			blocks.SwapItems(b, a);
 			return true;
 		}
 
 		return false;
-	}
-
-	static void DrawBlocks(List<int> blocks)
-	{
-		foreach (var b in blocks)
-		{
-			Console.Write(b == -1 ? '.' : b.ToString());
-		}
-
-		Console.WriteLine();
-		Thread.Sleep(TimeSpan.FromMilliseconds(25));
 	}
 }
