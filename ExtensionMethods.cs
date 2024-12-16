@@ -2,7 +2,7 @@
 
 public static class ExtensionMethods
 {
-	public static bool InBounds<T>(this T[,] map, int x, int y) where T : IEquatable<T>
+	public static bool InBounds<T>(this T[,] map, int x, int y)
 		=> x >= 0 && y >= 0 && x < map.GetLength(0) && y < map.GetLength(1);
 
 	public static void SwapItems<T>(this IList<T> list, int index1, int index2)
