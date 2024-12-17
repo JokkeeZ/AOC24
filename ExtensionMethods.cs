@@ -19,4 +19,14 @@ public static class ExtensionMethods
 
 		(list[index1], list[index2]) = (list[index2], list[index1]);
 	}
+
+	public static int NumberOfDigits(this long num)
+	{
+		if (num == 0)
+		{
+			return 1;
+		}
+
+		return (int)Math.Floor(Math.Log10(num) + 1);
+	}
 }

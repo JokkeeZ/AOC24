@@ -2,7 +2,7 @@
 
 class Day10 : IAdventDay
 {
-	public bool IsActive => true;
+	public bool IsActive => false;
 
 	private TrailNode[,] map;
 
