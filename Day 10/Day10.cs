@@ -4,24 +4,23 @@ class Day10 : IAdventDay
 {
 	public bool IsActive => true;
 
-	private TrailheadNode[,] map;
+	private TrailNode[,] map;
 
 	public void Solve(string[] input)
 	{
-		map = new TrailheadNode[input[0].Length, input.Length];
+		map = new TrailNode[input[0].Length, input.Length];
 
 		for (var y = 0; y < input.Length; ++y)
 		{
 			for (var x = 0; x < input[0].Length; ++x)
 			{
-				var value = int.TryParse(input[y][x].ToString(), out var i) ? i : -1;
-				map[x, y] = new(x, y, value);
+				map[x, y] = new(x, y, int.Parse(input[y][x].ToString()));
 			}
 		}
 
 		SetupNeighbors();
 
-		var trailheads = new List<int>();
+		var trailheadScores = new List<int>();
 		foreach (var start in GetNodesForNumber(0))
 		{
 			var count = 0;
@@ -33,18 +32,66 @@ class Day10 : IAdventDay
 				}
 			}
 
-			trailheads.Add(count);
+			trailheadScores.Add(count);
 		}
 
-		Console.WriteLine($"Part 1: {trailheads.Sum()}");
+		Console.WriteLine($"Part 1: {trailheadScores.Sum()}");
+
+		var trailheadRatings = new List<int>();
+		foreach (var start in GetNodesForNumber(0))
+		{
+			var allPaths = new List<List<TrailNode>>();
+			var currentPath = new List<TrailNode>();
+
+			foreach (var end in GetNodesForNumber(9))
+			{
+				DepthFirstSearch(start, end, currentPath, allPaths);
+			}
+
+			trailheadRatings.Add(allPaths.Count);
+		}
+
+		Console.WriteLine($"Part 2: {trailheadRatings.Sum()}");
 	}
 
-	static bool FindPath(TrailheadNode startNode, TrailheadNode end)
+	// https://en.wikipedia.org/wiki/Depth-first_search
+	private void DepthFirstSearch(TrailNode current, TrailNode end, List<TrailNode> path, List<List<TrailNode>> allPaths)
 	{
-		var openList = new List<TrailheadNode>();
-		var closedList = new List<TrailheadNode>();
+		if (!map.InBounds(current.X, current.Y))
+		{
+			return;
+		}
 
-		openList.Add(startNode);
+		if (map[current.X, current.Y].Visited)
+		{
+			return;
+		}
+
+		path.Add(current);
+		map[current.X, current.Y].Visited = true;
+
+		if (current.Position == end.Position)
+		{
+			allPaths.Add(new List<TrailNode>(path));
+		}
+		else
+		{
+			foreach (var neighbor in current.Neighbors)
+			{
+				DepthFirstSearch(neighbor, end, path, allPaths);
+			}
+		}
+
+		path.RemoveAt(path.Count - 1);
+		map[current.X, current.Y].Visited = false;
+	}
+
+	static bool FindPath(TrailNode start, TrailNode end)
+	{
+		var openList = new HashSet<TrailNode>();
+		var closedList = new List<TrailNode>();
+
+		openList.Add(start);
 
 		while (openList.Count > 0)
 		{
@@ -53,7 +100,7 @@ class Day10 : IAdventDay
 			openList.Remove(current);
 			closedList.Add(current);
 
-			if (current.X == end.X && current.Y == end.Y)
+			if (current.Position == end.Position)
 			{
 				return true;
 			}
@@ -65,10 +112,7 @@ class Day10 : IAdventDay
 					continue;
 				}
 
-				if (current.Value + 1 == neighbor.Value && !openList.Contains(neighbor))
-				{
-					openList.Add(neighbor);
-				}
+				openList.Add(neighbor);
 			}
 		}
 
@@ -77,43 +121,38 @@ class Day10 : IAdventDay
 
 	private void SetupNeighbors()
 	{
-		for (var y = 0; y < map.GetLength(1); ++y)
+		foreach (var node in map)
 		{
-			for (var x = 0; x < map.GetLength(0); ++x)
+			var neighbors = new List<TrailNode>
 			{
-				var neighbors = new List<TrailheadNode>
-				{
-					new(x, y - 1, 0),	// N
-					new(x, y + 1, 0),	// S
-					new(x + 1, y, 0),	// E
-					new(x - 1, y, 0)	// W
-				};
+				new(node.X, node.Y - 1, 0),	// N
+				new(node.X, node.Y + 1, 0),	// S
+				new(node.X + 1, node.Y, 0),	// E
+				new(node.X - 1, node.Y, 0)	// W
+			};
 
-				foreach (var neighbor in neighbors)
+			foreach (var neighbor in neighbors)
+			{
+				if (map.InBounds(neighbor.X, neighbor.Y))
 				{
-					if (map.InBounds(neighbor.X, neighbor.Y))
+					if (node.Value + 1 == map[neighbor.X, neighbor.Y].Value)
 					{
-						if (map[x, y].Value + 1 == map[neighbor.X, neighbor.Y].Value)
-						{
-							map[x, y].Neighbors.Add(map[neighbor.X, neighbor.Y]);
-						}
+						node.Neighbors.Add(map[neighbor.X, neighbor.Y]);
 					}
 				}
 			}
 		}
 	}
 
-	private List<TrailheadNode> GetNodesForNumber(int num)
+	private List<TrailNode> GetNodesForNumber(int num)
 	{
-		var positions = new List<TrailheadNode>();
-		for (var y = 0; y < map.GetLength(1); ++y)
+		var positions = new List<TrailNode>();
+
+		foreach (var item in map)
 		{
-			for (var x = 0; x < map.GetLength(0); ++x)
+			if (item.Value == num)
 			{
-				if (map[x, y].Value == num)
-				{
-					positions.Add(map[x, y]);
-				}
+				positions.Add(item);
 			}
 		}
 
@@ -121,11 +160,12 @@ class Day10 : IAdventDay
 	}
 }
 
-class TrailheadNode(int x, int y, int value)
+class TrailNode(int x, int y, int value)
 {
-	public int X { get; set; } = x;
-	public int Y { get; set; } = y;
-	public int Value { get; set; } = value;
-
-	public List<TrailheadNode> Neighbors { get; set; } = [];
+	public int X { get; } = x;
+	public int Y { get; } = y;
+	public int Value { get; } = value;
+	public bool Visited { get; set; }
+	public List<TrailNode> Neighbors { get; } = [];
+	public (int X, int Y) Position => (X, Y);
 }
