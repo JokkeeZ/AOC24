@@ -6,40 +6,57 @@ class Day11 : IAdventDay
 
 	public void Solve(string[] input)
 	{
-		var stones = input[0].Split(' ').Select(long.Parse).ToList();
-
+		var stones = input[0].Split(' ').Select(long.Parse).ToDictionary(s => s, s => 1L);
 		for (var i = 0; i < 25; ++i)
 		{
 			stones = Blink(stones);
 		}
 
-		Console.WriteLine($"Part 1: {stones.Count}");
+		Console.WriteLine($"Part 1: {stones.Values.Sum()}");
+
+		stones = input[0].Split(' ').Select(long.Parse).ToDictionary(s => s, s => 1L);
+		for (var i = 0; i < 75; ++i)
+		{
+			stones = Blink(stones);
+		}
+
+		Console.WriteLine($"Part 2: {stones.Values.Sum()}");
 	}
 
-	static List<long> Blink(List<long> stones)
+	static Dictionary<long, long> Blink(Dictionary<long, long> stones)
 	{
-		var newStones = new List<long>();
+		var newStones = new Dictionary<long, long>(stones);
 
-		for (var i = 0; i < stones.Count; ++i)
+		foreach (var (stone, count) in stones)
 		{
-			if (stones[i] == 0)
+			newStones[stone] -= count;
+
+			if (stone == 0L)
 			{
-				newStones.Add(1);
+				AddStone(newStones, 1L, count);
 			}
-			else if (stones[i].NumberOfDigits() % 2 == 0)
+			else if (stone.NumberOfDigits() % 2 == 0)
 			{
-				var digits = stones[i].NumberOfDigits();
+				var digits = stone.NumberOfDigits();
 				var div = (long)Math.Pow(10, digits / 2);
 
-				newStones.Add(stones[i] / div);
-				newStones.Add(stones[i] % div);
+				AddStone(newStones, stone / div, count);
+				AddStone(newStones, stone % div, count);
 			}
 			else
 			{
-				newStones.Add(stones[i] * 2024);
+				AddStone(newStones, stone * 2024, count);
 			}
 		}
 
 		return newStones;
+	}
+
+	static void AddStone(Dictionary<long, long> stones, long stone, long count)
+	{
+		if (!stones.TryAdd(stone, count))
+		{
+			stones[stone] += count;
+		}
 	}
 }
