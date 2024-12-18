@@ -27,7 +27,7 @@ class Day11 : IAdventDay
 	{
 		var newStones = new Dictionary<long, long>(stones);
 
-		foreach (var (stone, count) in stones)
+		foreach (var (stone, count) in stones.Where(s => s.Value != 0))
 		{
 			newStones[stone] -= count;
 
