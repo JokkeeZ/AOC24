@@ -2,7 +2,7 @@
 
 class Day10 : IAdventDay
 {
-	public bool IsActive => false;
+	public bool IsActive => true;
 
 	private TrailNode[,] map;
 
@@ -123,22 +123,11 @@ class Day10 : IAdventDay
 	{
 		foreach (var node in map)
 		{
-			var neighbors = new List<TrailNode>
+			foreach (var (X, Y) in map.GetNeighbors(node.X, node.Y))
 			{
-				new(node.X, node.Y - 1, 0),	// N
-				new(node.X, node.Y + 1, 0),	// S
-				new(node.X + 1, node.Y, 0),	// E
-				new(node.X - 1, node.Y, 0)	// W
-			};
-
-			foreach (var neighbor in neighbors)
-			{
-				if (map.InBounds(neighbor.X, neighbor.Y))
+				if (node.Value + 1 == map[X, Y].Value)
 				{
-					if (node.Value + 1 == map[neighbor.X, neighbor.Y].Value)
-					{
-						node.Neighbors.Add(map[neighbor.X, neighbor.Y]);
-					}
+					node.Neighbors.Add(map[X, Y]);
 				}
 			}
 		}
