@@ -33,6 +33,11 @@ public static class ExtensionMethods
 		return neighbors.Where(n => map.InBounds(n.x, n.y));
 	}
 
+	public static int Mod(this int num, int mod)
+	{
+		return (num % mod + mod) % mod;
+	}
+
 	public static int NumberOfDigits(this long num)
 	{
 		if (num == 0)

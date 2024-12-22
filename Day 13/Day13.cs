@@ -2,7 +2,7 @@
 
 class Day13 : IAdventDay
 {
-	public bool IsActive => true;
+	public bool IsActive => false;
 
 	public void Solve(string[] input)
 	{
