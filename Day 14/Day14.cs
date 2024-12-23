@@ -5,7 +5,7 @@ namespace AOC24;
 
 class Day14 : IAdventDay
 {
-	public bool IsActive => true;
+	public bool IsActive => false;
 
 	const int MapWidth = 101;
 	const int MapHeight = 103;
