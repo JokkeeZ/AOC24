@@ -51,27 +51,14 @@ class Day15 : IAdventDay
 		}
 	}
 
-	private bool UpdateBoxes(char c)
+	private bool UpdateBoxes(char c) => c switch
 	{
-		if (c == '^')
-		{
-			return MoveNeighborBoxesUp(c);
-		}
-		else if (c == 'v')
-		{
-			return MoveNeighborBoxesDown(c);
-		}
-		else if (c == '>')
-		{
-			return MoveNeighborBoxesRight(c);
-		}
-		else if (c == '<')
-		{
-			return MoveNeighborBoxesLeft(c);
-		}
-
-		return false;
-	}
+		'^' => MoveNeighborBoxesUp(c),
+		'v' => MoveNeighborBoxesDown(c),
+		'>' => MoveNeighborBoxesRight(c),
+		'<' => MoveNeighborBoxesLeft(c),
+		_ => false
+	};
 
 	private (int x, int y) GetNextPosition(char c)
 	{
